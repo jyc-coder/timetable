@@ -1,4 +1,5 @@
 import {
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -7,10 +8,12 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import React from 'react';
+import React, { useCallback } from 'react';
 import TimeTableRow from './TimeTableRow';
 import { withStyles } from '@mui/styles';
-
+import { AddBox } from '@mui/icons-material';
+import { useState } from 'react';
+import InputModal from '../InputModal/InputModal';
 const hourData = Array.from({ length: 11 }, (i, j) => j + 9);
 const styles = () => ({
   Table: {
@@ -21,6 +24,10 @@ const styles = () => ({
 });
 
 const TimeTable = ({ classes }) => {
+  const [showModal, setshowModal] = useState(false);
+  const handleClose = useCallback(() => {
+    setshowModal(false);
+  }, []);
   return (
     <>
       <TableContainer
@@ -35,26 +42,34 @@ const TimeTable = ({ classes }) => {
         <Typography variant="h2" fontWeight={10} component="div" align="center">
           강의시간표
         </Typography>
+        <Button
+          variant="contain"
+          sx={{ float: 'right' }}
+          endIcon={<AddBox />}
+          onClick={() => setshowModal(true)}
+        >
+          강의 추가
+        </Button>
         <Table className={classes.Table}>
           <TableHead>
             <TableRow>
               <TableCell align="center" width={100}>
-                Time
+                시간
               </TableCell>
               <TableCell align="center" width={200}>
-                Mon
+                월
               </TableCell>
               <TableCell align="center" width={200}>
-                Tue
+                화
               </TableCell>
               <TableCell align="center" width={200}>
-                Wed
+                수
               </TableCell>
               <TableCell align="center" width={200}>
-                Thu
+                목
               </TableCell>
               <TableCell align="center" width={200}>
-                Fri
+                금
               </TableCell>
             </TableRow>
           </TableHead>
@@ -70,6 +85,7 @@ const TimeTable = ({ classes }) => {
           </TableBody>
         </Table>
       </TableContainer>
+      <InputModal showModal={showModal} handleClose={handleClose} />
     </>
   );
 };
