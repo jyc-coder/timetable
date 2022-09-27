@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import TimeTableCell from './TimeTableCell';
 
 function TimeTableRow({ ...props }) {
@@ -13,4 +13,4 @@ function TimeTableRow({ ...props }) {
   );
 }
 
-export default TimeTableRow;
+export default memo(TimeTableRow);
