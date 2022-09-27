@@ -3,11 +3,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import { TableCell } from '@mui/material';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useRecoilState } from 'recoil';
+import ConfirmModal from '../ConfirmModal/ConfirmModal';
 import { timeTableState } from '../store/store';
 
 function TimeTableCell({ day, timeNum, Edit }) {
   const [timeTableData, settimeTableData] = useRecoilState(timeTableState);
   const [hover, sethover] = useState(false);
+  const [open, setopen] = useState(false);
+  const [doubleopen, setdoubleopen] = useState(false);
 
   const timeData = useMemo(
     () =>
@@ -16,6 +19,28 @@ function TimeTableCell({ day, timeNum, Edit }) {
       ),
     [day, timeNum, timeTableData],
   );
+  const handleClose = useCallback(() => {
+    setopen(false);
+    setdoubleopen(false);
+  }, []);
+  const handleConfirm = useCallback(() => setopen(true), []);
+  const handleDelete = useCallback(() => {
+    setdoubleopen(true);
+  }, []);
+
+  const confirmDelete = useCallback(() => {
+    settimeTableData((oldtimeTableData) => {
+      const newDayData = oldtimeTableData[day].filter(
+        (data) => data.id !== timeData.id,
+      );
+      return {
+        ...oldtimeTableData,
+        [day]: newDayData,
+      };
+    });
+    setopen(false);
+    setdoubleopen(false);
+  }, [day, settimeTableData, timeData?.id]);
 
   const handleEdit = useCallback(
     () => Edit(day, timeData.id),
@@ -35,13 +60,23 @@ function TimeTableCell({ day, timeNum, Edit }) {
           {hover ? (
             <div style={{ position: 'absolute', top: 5, right: 5 }}>
               <EditIcon style={{ cursor: 'pointer' }} onClick={handleEdit} />
-              <DeleteIcon style={{ cursor: 'pointer' }} onClick={handleEdit} />
+              <DeleteIcon
+                style={{ cursor: 'pointer' }}
+                onClick={handleConfirm}
+              />
             </div>
           ) : null}
         </TableCell>
       ) : timeData?.start < timeNum && timeNum < timeData?.end ? null : (
         <TableCell />
       )}
+      <ConfirmModal
+        open={open}
+        handleClose={handleClose}
+        handleDelete={handleDelete}
+        confirmDelete={confirmDelete}
+        doubleopen={doubleopen}
+      ></ConfirmModal>
     </>
   );
 }
