@@ -28,6 +28,7 @@ const timeOptions = new Array(12).fill(null).map((e, i) => ({
 const checkOverLap = (A, B) =>
   B.start < A.start ? B.end > A.start : B.start < A.end;
 
+
 function InputModal({
   showModal,
   handleClose,
@@ -38,6 +39,9 @@ function InputModal({
   colorData = '#FFFFFF',
   idNum,
 }) {
+
+function InputModal({ showModal, handleClose }) {
+
   const {
     formState: { errors },
     control,
@@ -49,6 +53,7 @@ function InputModal({
   useEffect(() => {
     if (showModal) {
       reset({
+
         lecturename: lectureNameData,
         day: dayData,
         startTime: startTimeData,
@@ -65,6 +70,16 @@ function InputModal({
     showModal,
     startTimeData,
   ]);
+
+        lecturename: '',
+        day: 'fri',
+        startTime: 9,
+        endTime: 10,
+        lectureColor: '#FFFFFF',
+      });
+    }
+  }, [reset, showModal]);
+
   const Submit = useCallback(
     ({ lectureName, day, startTime, endTime, lectureColor }) => {
       let valid = true;
@@ -102,6 +117,7 @@ function InputModal({
     },
     [handleClose, setttimeTableData, timeTableData],
   );
+
 
   const Edit = useCallback(
     ({ lectureName, day, startTime, endTime, lectureColor }) => {
@@ -155,6 +171,11 @@ function InputModal({
   return (
     <Dialog open={showModal} onClose={handleClose}>
       <form onSubmit={handleSubmit(idNum ? Edit : Submit)}>
+
+  return (
+    <Dialog open={showModal} onClose={handleClose}>
+      <form onSubmit={handleSubmit(Submit)}>
+
         <DialogTitle align="center"> 강의 정보 입력</DialogTitle>
         <DialogContent style={{ width: '400px' }}>
           <Controller
