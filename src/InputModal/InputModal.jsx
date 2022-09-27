@@ -28,7 +28,20 @@ const timeOptions = new Array(12).fill(null).map((e, i) => ({
 const checkOverLap = (A, B) =>
   B.start < A.start ? B.end > A.start : B.start < A.end;
 
+
+function InputModal({
+  showModal,
+  handleClose,
+  dayData = 'mon',
+  startTimeData = 9,
+  endTimeData = 10,
+  lectureNameData = '',
+  colorData = '#FFFFFF',
+  idNum,
+}) {
+
 function InputModal({ showModal, handleClose }) {
+
   const {
     formState: { errors },
     control,
@@ -40,6 +53,24 @@ function InputModal({ showModal, handleClose }) {
   useEffect(() => {
     if (showModal) {
       reset({
+
+        lecturename: lectureNameData,
+        day: dayData,
+        startTime: startTimeData,
+        endTime: endTimeData,
+        lectureColor: colorData,
+      });
+    }
+  }, [
+    colorData,
+    dayData,
+    endTimeData,
+    lectureNameData,
+    reset,
+    showModal,
+    startTimeData,
+  ]);
+
         lecturename: '',
         day: 'fri',
         startTime: 9,
@@ -48,6 +79,7 @@ function InputModal({ showModal, handleClose }) {
       });
     }
   }, [reset, showModal]);
+
   const Submit = useCallback(
     ({ lectureName, day, startTime, endTime, lectureColor }) => {
       let valid = true;
@@ -85,9 +117,65 @@ function InputModal({ showModal, handleClose }) {
     },
     [handleClose, setttimeTableData, timeTableData],
   );
+
+
+  const Edit = useCallback(
+    ({ lectureName, day, startTime, endTime, lectureColor }) => {
+      let valid = true;
+
+      for (let index = 0; index < timeTableData[day].length; index++) {
+        if (
+          checkOverLap(timeTableData[day][index], {
+            start: startTime,
+            end: endTime,
+          }) &&
+          timeTableData[day][index]['id'] !== idNum
+        ) {
+          valid = false;
+          break;
+        }
+      }
+
+      if (!valid) {
+        alert('해당 시간대에 이미 강의가 있어. 다시 확인해봐 ');
+        return;
+      }
+      const filteredDayData = [
+        ...timeTableData[dayData].filter((data) => data.id !== idNum),
+      ];
+
+      const newTimeTableData = {
+        ...timeTableData,
+        [dayData]: filteredDayData,
+      };
+      const newDayData = [
+        ...newTimeTableData[day],
+        {
+          start: startTime,
+          end: endTime,
+          id: idNum,
+          name: lectureName,
+          color: lectureColor,
+        },
+      ];
+
+      setttimeTableData({
+        ...newTimeTableData,
+        [day]: newDayData,
+      });
+
+      handleClose();
+    },
+    [dayData, handleClose, idNum, setttimeTableData, timeTableData],
+  );
+  return (
+    <Dialog open={showModal} onClose={handleClose}>
+      <form onSubmit={handleSubmit(idNum ? Edit : Submit)}>
+
   return (
     <Dialog open={showModal} onClose={handleClose}>
       <form onSubmit={handleSubmit(Submit)}>
+
         <DialogTitle align="center"> 강의 정보 입력</DialogTitle>
         <DialogContent style={{ width: '400px' }}>
           <Controller
